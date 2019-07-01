@@ -5,13 +5,37 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
+@Parcel
 public class Book {
     private String openLibraryId;
     private String author;
     private String title;
+    private String publisher;
+    private String publish_year;
+    private String publish_date;
+
+    public Book() {
+        // empty constructor for parcelable
+    }
+
+
+
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public String getPublish_year() {
+        return publish_year;
+    }
+
+    public String getPublish_date() {
+        return publish_date;
+    }
 
     public String getOpenLibraryId() {
         return openLibraryId;
@@ -30,6 +54,8 @@ public class Book {
         return "https://covers.openlibrary.org/b/olid/" + openLibraryId + "-L.jpg?default=false";
     }
 
+
+
     // Returns a Book given the expected JSON
     public static Book fromJson(JSONObject jsonObject) {
         Book book = new Book();
@@ -44,6 +70,10 @@ public class Book {
             }
             book.title = jsonObject.has("title_suggest") ? jsonObject.getString("title_suggest") : "";
             book.author = getAuthor(jsonObject);
+            book.publish_date = getPublisherDate(jsonObject);
+            book.publish_year = getPublisherYear(jsonObject);
+            book.publisher = getPublisher(jsonObject);
+
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -62,6 +92,33 @@ public class Book {
                 authorStrings[i] = authors.getString(i);
             }
             return TextUtils.join(", ", authorStrings);
+        } catch (JSONException e) {
+            return "";
+        }
+    }
+
+    private  static String getPublisher(final JSONObject jsonObject) {
+        try {
+            final JSONArray publisher = jsonObject.getJSONArray("publisher");
+            return publisher.get(0).toString();
+        } catch (JSONException e) {
+            return "";
+        }
+    }
+
+    private  static String getPublisherYear(final JSONObject jsonObject) {
+        try {
+            final JSONArray publish_year = jsonObject.getJSONArray("publish_year");
+            return publish_year.get(0).toString();
+        } catch (JSONException e) {
+            return "";
+        }
+    }
+
+    private  static String getPublisherDate(final JSONObject jsonObject) {
+        try {
+            final JSONArray publish_date = jsonObject.getJSONArray("publish_date");
+            return publish_date.get(0).toString();
         } catch (JSONException e) {
             return "";
         }
@@ -87,4 +144,7 @@ public class Book {
         }
         return books;
     }
+
+
+
 }
